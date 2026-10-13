@@ -1,0 +1,91 @@
+MAPPER UI-01 — IMPLEMENTATION AND TEST REPORT
+2026-10-13 | Accepted baseline main 69c50fa
+
+DELIVERY STATUS
+Implemented and automated-tested. Requires PO Revit Desktop Acceptance.
+MS-0/MS-1 acceptance remains as stated by PO. No Git operations, schema changes,
+future milestone implementation, renderer selection or new Revit model writes.
+Remote baseline confirmed read-only at 69c50faa97569d946d43723b2df0e0fafb4d22a4;
+this does not claim integration of the delivered overlay.
+
+IMPLEMENTATION
+Replaced only the activity selector's flat list with WPF TreeView. New pure
+activity_tree.py constructs WBS hierarchy and child activities from normalized
+IDs, preserving source sibling order. UI carries the original Activity key,
+never a label or WBS key. Expand/collapse and hierarchy-aware search work with
+Thai/English strings. Selection is set through TreeViewItem.IsSelected;
+TreeView.SelectedItem is read-only. Headings clear the mapping target. A search
+that hides the selected Activity clears its target; collapse retains the target
+with explicit details. Normal expansion survives refresh; search expands
+matching context transiently. Tree state is not persisted.
+
+Defensive tree construction retains orphan/missing/duplicate WBS identities
+and cycles with visible warnings. Invalid Activity keys are nonassignable.
+This is a projection, not silent data repair: strict existing P6 import and work
+validation remain unchanged and may reject malformed schedules before viewing.
+No activities are silently discarded by the projection. The public synthetic
+fixture and pure tests exercise these cases without claiming broader P6 support.
+
+PRESERVED BEHAVIOR
+Many-to-many Add, duplicate no-op, independent Reassign/Remove, note editing,
+Undo, review/native selection, Import/Open/Save, validation and exchange remain
+on existing domain commands. Core, importer, storage and native adapter are
+unchanged. Existing valid working files need no migration. Source model guards,
+missing-element handling and renderer-independent exchange retain baseline rules.
+
+AUTOMATED EVIDENCE
+Command from repository root:
+  python3 -W ignore::DeprecationWarning -m unittest discover -s tests/mapping -v
+Public synthetic fixture: 80 tests run; 79 passed, 1 optional private-source test
+skipped; exit 0. Extended run with MAPPER_REAL_P6 set to original MS-0
+009_P6.xml: 80 tests run; 80 passed; exit 0.
+Original-project pure projection: 209/209 Activities, 72/72 WBS, zero hierarchy
+warnings. Original XML hash checked by the preserved regression:
+545ffe1c0a9e5bb36d98dda09e7bc32336b9ecafcffb88c5492d8cf91b70446e
+Full commands/results/runtime: evidence/UI01_AUTOMATED_TEST_RESULTS.txt.
+
+17 new tests cover hierarchy, labels/identity, malformed references, cycles,
+missing/duplicate identities, Thai search, unchanged input, deep hierarchy,
+TreeView target behavior, many-to-many command integration, expansion and no
+navigation writes. Existing regressions still cover relationship atomicity,
+cancellation, storage/recovery, native boundary and exchange validation.
+Revit/WPF tests use explicit mocks; actual WPF event routing, rendering, desktop
+performance and IronPython/.NET interaction are NOT verified by these tests.
+
+TEST PORTABILITY REPAIR
+Baseline tests referenced an absent private fixture. Added a clearly synthetic
+3-activity/4-WBS sample and switched general regressions to it. The original
+209-activity regression is retained as opt-in through MAPPER_REAL_P6, including
+its exact hash and date/Thai assertions. No private schedule is packaged.
+
+DOCUMENTATION
+README now describes the populated standalone Mapper repository and current
+capabilities. docs/ENGINEERING.md defines roles/delivery; CONTRACTS.md documents
+architecture and preserved formats; STATUS.md is the current acceptance ledger.
+The mapping index links current usage, evidence and historical report. The
+original MS-1 implementation report and original evidence are unchanged;
+installation text is updated for this overlay and short UI-01 desktop gate.
+Roadmap investigation is separate and proposes only future work.
+
+LIMITATIONS AND OPEN ACCEPTANCE
+PO must verify actual nested WBS display, text, target identity and a short
+mapping/save/reopen/export smoke flow on the accepted desktop environment.
+No need to repeat native deletion/replacement or IFC MS-0 campaign.
+Tree constructs all containers; very large real schedules may need later
+measured optimization. Deep pure-data traversal is not a WPF scalability claim.
+Source order is preserved, not P6 user-specific sort/filter settings.
+Existing single-writer/local storage/non-workshared restrictions remain.
+No new product conflict blocks delivery. Only desktop acceptance is required
+for UI-01; future roadmap priority/implementation needs separate PO approval.
+
+PACKAGE
+MAPPER_UI01_CHANGED_FILES_69c50fa.zip contains complete changed/new files at
+exact repository-relative paths. It is an overlay, not a standalone installer.
+UI01_CHANGED_FILES_MANIFEST.txt records old/new SHA-256 and byte counts; itself
+excluded from hashing. Apply to the pinned baseline and retain unchanged files.
+No deletion is required. No private project XML, caches or helper scripts included.
+
+DOCUMENTATION BASIS
+Microsoft WPF TreeView selection/expansion contract:
+https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/treeview
+This informed implementation; actual desktop acceptance is separately pending.

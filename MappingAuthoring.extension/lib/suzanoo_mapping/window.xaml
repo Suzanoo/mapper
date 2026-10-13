@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Mapping Authoring — MS-1 Pilot" Width="1120" Height="800"
+        Title="Mapper — WBS Mapping Authoring" Width="1120" Height="800"
         MinWidth="940" MinHeight="670" WindowStartupLocation="CenterScreen"
         Background="#F5F5F3" Foreground="#20262B" FontFamily="Segoe UI" FontSize="13">
   <Window.Resources>
@@ -28,9 +28,13 @@
       <Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions>
       <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="115"/></Grid.RowDefinitions>
-        <TextBlock Text="1. Choose a target activity" FontWeight="Bold"/>
-        <TextBox Grid.Row="1" x:Name="ActivitySearch" ToolTip="Search code, name or WBS" TextChanged="on_activity_filter"/>
-        <ListBox Grid.Row="2" x:Name="Activities" SelectionMode="Single" SelectionChanged="on_activity_changed"/>
+        <TextBlock Text="1. WBS → Activities" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1">
+          <TextBox x:Name="ActivitySearch" ToolTip="Search activity code/name or WBS; ancestors stay visible" TextChanged="on_activity_filter"/>
+          <WrapPanel><Button Content="Expand all" Click="on_expand_tree"/><Button Content="Collapse all" Click="on_collapse_tree"/></WrapPanel>
+          <TextBlock x:Name="TreeStatus" TextWrapping="Wrap" Margin="0,0,0,6"/>
+        </StackPanel>
+        <TreeView Grid.Row="2" x:Name="Activities" SelectedItemChanged="on_activity_changed" BorderBrush="#CBD0D4" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
         <TextBox Grid.Row="3" x:Name="ActivityDetails" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
       </Grid>
       <Grid Grid.Column="2">

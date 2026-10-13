@@ -1,0 +1,34 @@
+UI-01 — SHORT PRODUCT OWNER DESKTOP ACCEPTANCE
+Status: REQUIRED; not executed by Work. Reuse accepted MS-1 environment/model.
+
+Installation
+Coordinator overlays the changed-file ZIP onto baseline main 69c50fa. It is
+not a complete extension installer: retain all unchanged baseline files.
+Close Mapping palette, copy the resulting complete MappingAuthoring.extension
+to its existing pyRevit extension location and Reload pyRevit/restart Revit.
+Do not install duplicate copies. Use a backup work file and the same saved host.
+
+1. Open existing work; inspect nested WBS and child activities against P6.
+   Check Thai/English labels, expand/collapse, empty WBS and total activity count.
+   Search an Activity code and Thai text: matching rows retain ancestors.
+   Search WBS name: its descendants appear. Clear search: normal tree returns.
+2. Select Activity A and confirm code/name in target detail. Click a WBS:
+   target clears; Add must not assign to the previous Activity. Select A again,
+   then search text excluding A: target clears. Collapse alone may retain A,
+   but the target detail must still identify A. Navigation must not save edits.
+3. Capture two eligible elements E1/E2; add both to A. Capture E1; add to B.
+   Check E1 has A and B, E2 has A. Repeating E1→B adds no duplicate.
+   Review E1 and Select in Revit must select the original native element.
+4. Reassign only E1→A to a third Activity C; E1→B remains. Remove E1→B,
+   Undo, then cancel another removal: existing pairs remain as expected.
+   Save / Check, Close work, reopen: relationships and Thai note persist.
+5. Validate and export to a new path. Confirm expected pair counts and no
+   unexpected model changes. For import smoke, New + Import a real P6 XML
+   into a separate work file and compare its WBS/counts; cancel a picker once.
+   Do not redo deletion/replacement or IFC MS-0 testing for this UI change.
+
+Record PASS/FAIL per step, Revit/pyRevit/engine versions, schedule counts,
+selection/label errors and any visibly slow search/expand operation. A failed
+step blocks UI-01 acceptance; preserve the work file and exact error for review.
+Malformed-source fallback is automated-tested; no need to manufacture a bad
+schedule on desktop. Importer errors must remain explicit, never silent loss.

@@ -1,23 +1,17 @@
-# Mapping Authoring — MS-1 Pilot
+# Mapping documentation
 
-Start with [installation and desktop acceptance](INSTALL_AND_DESKTOP_ACCEPTANCE.txt).
-Read the [implementation report](REVIT_PYREVIT_MAPPING_MS1_IMPLEMENTATION_REPORT.txt)
-for behavior, engineering decisions, limitations and evidence status.
+Start with [current status](STATUS.md), [contracts](CONTRACTS.md) and [engineering workflow](../ENGINEERING.md).
 
-New extension: `MappingAuthoring.extension` at repository root. Existing
-`MyTools.extension` is unchanged. The separate MS-0 proof is closed and is not
-this author's working-file format.
+## Current usage and delivery
 
-Authoritative policy: many-to-many relationships; Add never replaces existing
-pairs. Reassign/remove operate on selected relationship rows. Host only, P6 only,
-external autosave, no renderer and no RVT model writes.
+- [Installation and full pilot usage](INSTALL_AND_DESKTOP_ACCEPTANCE.txt)
+- [UI-01 implementation/test report](UI01_IMPLEMENTATION_REPORT.txt)
+- [UI-01 short desktop checklist](UI01_DESKTOP_ACCEPTANCE.txt)
+- [UI-01 automated evidence](evidence/UI01_AUTOMATED_TEST_RESULTS.txt)
+- [Independent roadmap investigation](MAPPER_MILESTONE_ROADMAP_INVESTIGATION.txt): proposals only
 
-Automated tests (CPython 3.9+, standard library only):
+## Historical evidence
 
-```text
-python -m unittest discover -s tests/mapping -v
-python tools/validate_mapping_exchange.py PATH_TO_EXCHANGE_JSON
-```
+[Original MS-1 delivery report](REVIT_PYREVIT_MAPPING_MS1_IMPLEMENTATION_REPORT.txt) and existing evidence files are preserved. Their original pending-desktop labels describe that delivery date, not today's acceptance status. The root `MANIFEST_SHA256.txt`, if present, belongs to the original delivery; use `UI01_CHANGED_FILES_MANIFEST.txt` for this overlay.
 
-Desktop execution/acceptance remains pending. Tests use explicit fakes where
-Revit/WPF would be required. Their success is not desktop certification.
+MS-0 investigation, proof and final-assessment reports were accepted in the earlier revit-toolkit work. They are not present in this Mapper baseline and are not reconstructed here. The current PO authorization establishes MS-0/MS-1 acceptance. See STATUS.md for evidence boundaries.

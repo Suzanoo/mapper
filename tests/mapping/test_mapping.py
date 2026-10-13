@@ -17,7 +17,8 @@ LIB = ROOT / 'MappingAuthoring.extension' / 'lib'
 sys.path.insert(0, str(LIB))
 from suzanoo_mapping import core, p6, storage
 from suzanoo_mapping.p6 import MappingError
-SOURCE = Path(__file__).parent / 'fixtures' / '009_P6.xml'
+SOURCE = Path(__file__).parent / 'fixtures' / 'sample_p6.xml'
+REAL_SOURCE = Path(os.environ['MAPPER_REAL_P6']) if os.environ.get('MAPPER_REAL_P6') else None
 
 
 def document():
@@ -192,8 +193,9 @@ class P6Tests(unittest.TestCase):
     def activity(self): return self.project.find('p:Activity', self.ns)
     def tag(self, name): return '{%s}%s' % (p6.NAMESPACE, name)
 
+    @unittest.skipUnless(REAL_SOURCE, 'Optional private fixture: set MAPPER_REAL_P6 to original 009_P6.xml')
     def test_real_source_identity_dates_unicode_counts(self):
-        s = self.normalize()
+        s = p6.normalize(p6.inspect(str(REAL_SOURCE)), '5380')
         self.assertEqual(209, len(s['activities'])); self.assertEqual(72, len(s['wbs']))
         self.assertEqual('545ffe1c0a9e5bb36d98dda09e7bc32336b9ecafcffb88c5492d8cf91b70446e', s['source']['sha256'])
         a = next(a for a in s['activities'] if a['Id'] == 'A1660')
