@@ -1,0 +1,64 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Mapping Authoring — MS-1 Pilot" Width="1120" Height="800"
+        MinWidth="940" MinHeight="670" WindowStartupLocation="CenterScreen"
+        Background="#F5F5F3" Foreground="#20262B" FontFamily="Segoe UI" FontSize="13">
+  <Window.Resources>
+    <Style TargetType="Button"><Setter Property="Margin" Value="0,0,6,6"/><Setter Property="Padding" Value="10,6"/></Style>
+    <Style TargetType="TextBox"><Setter Property="Padding" Value="6"/><Setter Property="Margin" Value="0,4,0,6"/></Style>
+    <Style TargetType="ListBox"><Setter Property="BorderBrush" Value="#CBD0D4"/><Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/></Style>
+  </Window.Resources>
+  <Grid Margin="14" x:Name="Workspace">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="125"/>
+    </Grid.RowDefinitions>
+    <WrapPanel>
+      <Button Content="New + Import P6" Click="on_new"/>
+      <Button Content="Open work" Click="on_open"/>
+      <Button Content="Close work" Click="on_close_work"/>
+      <Button Content="Save / Check" Click="on_save"/>
+      <Button Content="Recover backup" Click="on_recover"/>
+      <Button Content="Check source XML" Click="on_check_source"/>
+      <Button Content="Validate" Click="on_validate"/>
+      <Button Content="Export" Click="on_export"/>
+    </WrapPanel>
+    <TextBlock Grid.Row="1" x:Name="Summary" Text="Open a saved host RVT, then create or open a mapping working document." TextWrapping="Wrap" Margin="0,4,0,10" FontWeight="SemiBold"/>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="3*"/></Grid.ColumnDefinitions>
+      <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="115"/></Grid.RowDefinitions>
+        <TextBlock Text="1. Choose a target activity" FontWeight="Bold"/>
+        <TextBox Grid.Row="1" x:Name="ActivitySearch" ToolTip="Search code, name or WBS" TextChanged="on_activity_filter"/>
+        <ListBox Grid.Row="2" x:Name="Activities" SelectionMode="Single" SelectionChanged="on_activity_changed"/>
+        <TextBox Grid.Row="3" x:Name="ActivityDetails" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+      </Grid>
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel>
+          <TextBlock Text="2. Select native elements in Revit" FontWeight="Bold"/>
+          <WrapPanel Margin="0,7,0,0"><Button Content="Use current selection" Click="on_capture"/><Button Content="Add to target activity" Click="on_assign" Background="#EFC34D"/></WrapPanel>
+          <TextBlock x:Name="CaptureSummary" Text="No captured selection." TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Margin="0,10,0,0">
+          <TextBlock Text="3. Review relationships — select rows to edit" FontWeight="Bold"/>
+          <TextBox x:Name="ReviewSearch" ToolTip="Search activity, element Id/UniqueId, category, level, note or status" TextChanged="on_review_filter"/>
+        </StackPanel>
+        <WrapPanel Grid.Row="2" Margin="0,0,0,7">
+          <CheckBox x:Name="OnlyActivity" Content="Target activity only" Checked="on_review_filter" Unchecked="on_review_filter" Margin="0,0,12,0"/>
+          <CheckBox x:Name="OnlyCaptured" Content="Captured elements only" Checked="on_review_filter" Unchecked="on_review_filter"/>
+        </WrapPanel>
+        <ListBox Grid.Row="3" x:Name="Relationships" SelectionMode="Extended"/>
+        <WrapPanel Grid.Row="4" Margin="0,8,0,0">
+          <Button Content="Select in Revit" Click="on_select"/>
+          <Button Content="Reassign rows" Click="on_reassign"/>
+          <Button Content="Edit note" Click="on_note"/>
+          <Button Content="Remove rows" Click="on_remove"/>
+          <Button Content="Undo last edit" Click="on_undo"/>
+        </WrapPanel>
+      </Grid>
+    </Grid>
+    <TextBlock Grid.Row="3" Text="Every confirmed edit is saved externally. Ctrl/Shift selects multiple relationship rows. Whole elements; no RVT writes." TextWrapping="Wrap" Margin="0,8,0,2"/>
+    <TextBox Grid.Row="4" x:Name="Messages" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"/>
+  </Grid>
+</Window>

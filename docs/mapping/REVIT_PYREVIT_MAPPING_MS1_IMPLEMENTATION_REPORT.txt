@@ -1,0 +1,225 @@
+REVIT / PYREVIT MAPPING — MS-1 IMPLEMENTATION REPORT
+Delivery: 13 October 2026 (Asia/Bangkok)
+Repository: Suzanoo/revit-toolkit
+Accepted and inspected baseline: main @ 3b2b66272b826653757a3baf5664b4e8be9313ef
+Status: IMPLEMENTED / 63 AUTOMATED TESTS PASS / DESKTOP ACCEPTANCE PENDING
+
+1. RESULT
+
+ส่งมอบ Host-model Mapping Authoring Pilot แบบ many-to-many แล้ว
+หนึ่ง activity รับหลาย elements ได้ และหนึ่ง element รับหลาย activities ได้
+Add ไม่ทับคู่เดิม; Review/Reassign/Remove/Edit note ทำงานกับคู่ที่เลือกเท่านั้น
+บันทึกภายนอกทุกครั้งที่ยืนยัน เปิดงานต่อได้ และ export ข้อมูลไม่ผูก renderer
+
+MS-0 remains ACCEPTED/CLOSED. This milestone does not reopen its IFC campaign.
+No Git operations, repository writes or MS-2 work were performed.
+The extension was implemented and tested offline here; the new WPF/ExternalEvent
+workflow and production Windows/.NET storage branch require the supplied short
+Revit desktop acceptance. A source implementation is not a desktop PASS claim.
+
+2. REPOSITORY AND ENGINEERING BASIS
+
+Read the four accepted investigation/proof/closure/proposal reports. The latest
+PO requirement for multiple activities per element overrides the proposal's
+single-active-activity suggestion and any earlier proof cardinality limit.
+
+Confirmed current main equals the accepted baseline through read-only GitHub
+API access. Inspected the recursive tree, README, state_store.py and relevant
+WallArea selection/level patterns, with the previously inspected MS-0 sources.
+No repository engineering contracts, AGENTS.md, docs index or mapping production
+code existed in that baseline tree. Existing tools are not modified.
+
+Implemented as a separate MappingAuthoring.extension with suzanoo_mapping
+namespace. Existing MyTools and optional MappingMS0 can coexist. No import of
+session-only grid state, grid CSV logic or import-time document globals.
+
+UI choice: modeless WPF palette, one pending ExternalEvent request at a time.
+All native API access occurs in the event's supported API context; handlers
+check the exact bound document object and path again at execution. A pending
+operation disables the palette; closing is deferred until the request ends.
+Switching/closing the bound RVT or Save As requires returning or reopening and
+confirming binding. No continuous selection polling, dockable pane or server.
+
+3. IMPLEMENTED USER LOOP
+
+New + Import P6 / Open work -> activity search and metadata -> native selection
+-> Capture preview -> Add -> review/filter -> select native elements -> edit
+individual relations -> auto-save -> close/reopen -> validate/export.
+
+Activity search uses code/name/WBS. Review supports activity-only, captured-
+element-only and free text including category, level, status, ID and note.
+A row is a relationship, not an element or a comma-separated activity list.
+Capture reports excluded objects and keeps an explicit buffer; Add re-resolves
+its UniqueIds before committing. Revit selection changes alone do not alter it.
+
+Initial categories: Walls, Floors, Structural Columns, Structural Framing.
+Category-specific level parameters precede Element.LevelId fallback. Unknown
+level is explicit; levels are not geometry-splitting or construction-zone rules.
+Links, types, imports, containers, Parts, nested families and other categories
+are visibly excluded. Group member instances are not automatically expanded.
+
+4. MANY-TO-MANY SEMANTICS
+
+Each relationship has a persistent relation ID, native element endpoint,
+snapshot-qualified activity endpoint, whole-element scope, associated-work
+meaning, note and timestamps. Within a working document, an identical endpoint
+pair is unique. There is no exclusive activity ownership of an element.
+
+- Add creates absent pairs; existing pairs and other activities stay untouched.
+- Duplicate Add is a no-op, including no new persisted revision.
+- Reassign changes the activity of selected relationship IDs only, retaining
+  their notes/creation evidence. Same target is a no-op.
+- A reassign that would duplicate another pair refuses the entire operation.
+  It does not silently merge relations or discard notes. The user may explicitly
+  remove the redundant old pair or choose another target.
+- Remove deletes only selected pairs, never the native object or its other pairs.
+- Edit note modifies selected pairs; no role/animation semantics are inferred.
+- To correct an element endpoint, explicitly Add the new pair and Remove the old
+  pair. Missing identities are never automatically substituted.
+- Undo restores the preceding committed relationship state as a new revision.
+  One undo step is available within the current session, not after reopening.
+
+Multiple activities on one object are associations, not geometry partitions,
+quantity allocations, percentages or a “last task wins” rendering policy.
+
+5. IDENTITY, P6 NORMALIZATION AND VALIDATION
+
+Working documents own a persistent logical model key. Native element identity
+is model key + Revit UniqueId; diagnostic ElementId is text, never the resolver
+for previous mappings. Exact lookup reports resolved/missing/ineligible; records
+are retained when missing. ProjectInformation UniqueId is corroborating evidence,
+not a globally unique lineage guarantee. Every Open asks for explicit same-model
+confirmation; distinct native model evidence is refused. Copies can preserve IDs
+and still require operator judgment; no automatic fork detection is promised.
+
+The pilot requires a saved, unmodified, non-workshared native host. It does not
+write parameters, geometry, Extensible Storage, view overrides or transactions.
+Select in Revit changes only UI selection. Revit Undo is not external-file Undo.
+
+P6 Professional V24.12 APIBusinessObjects is the qualified profile. Multiple
+projects can be presented; exactly one is normalized into each working document.
+The real supplied fixture retains 209 activities/72 WBS and Thai text. IDs remain
+strings; activity keys include source SHA-256 + project ObjectId + activity
+ObjectId. These are immutable snapshot keys, not cross-database migration keys.
+
+Retains project/activity/WBS identifiers, GUIDs when present, WBS hierarchy,
+source order, type/status/calendar reference, selected progress/duration metadata
+and distinct current/planned/actual/remaining-early dates. Missing/nil/empty/value
+remain distinct. ISO timestamps retain source precision/offsets; absent timezone
+is not converted to UTC. Current dates are not a contractual baseline.
+No CPM, calendar calculation, dependencies/resources/cost/UDF preservation or
+full P6 XSD validation is claimed. Unsupported dialects/MSP are refused.
+
+Input safeguards include a 20 MiB XML bound, DTD/entity declaration rejection,
+project/WBS/duplicate checks, cycle detection and date validation. Working JSON
+is bounded to 64 MiB, rejects duplicate fields/non-finite numbers and unknown
+format versions, and validates keys, scope, references and endpoint uniqueness.
+
+Schedule is stored inside the working document; the source XML path is not
+needed to resume. Check source XML detects changed hashes without replacing
+the snapshot. No refresh/migration UI is implemented.
+
+6. PERSISTENCE, RECOVERY AND EXCHANGE
+
+Working format: suzanoo-mapping-work-1 (.mapping.json), UTF-8 JSON.
+External file is authoritative. Each confirmed edit validates a candidate,
+checks expected disk checksum, stages a same-directory temporary file, flushes
+and publishes a replacement, then updates in-memory state. Saved status is not
+set before the commit boundary. Revision/history record operation and local
+actor label; username is not authenticated identity.
+
+IronPython/Windows uses an OS-held FileStream writer lock, Flush(true),
+File.Replace with .bak, and non-overwriting File.Move for new files.
+CPython tests use OS locking and same-filesystem publication/replacement.
+A live lock or external file change refuses writes. OS locks release on process
+exit; lock-marker presence alone is not treated as a stale active lock.
+
+Target a local writable NTFS folder, one writer. Network/sync-folder concurrency,
+locking across copied files and power-loss durability are NOT qualified.
+A .bak contains one prior committed revision, not long-term archival history.
+Recover backup validates it and writes a NEW file; the original is never replaced
+by recovery. Corrupt/unsupported input is rejected without repair-in-place.
+
+Save / Check verifies the committed file and rechecks native endpoints; edits
+already auto-save, so there is no hidden unsaved project state to discard.
+Close and canceled dialogs preserve prior work. Staged failures leave the prior
+committed memory/file intact; tests inject failures before publication.
+
+Exchange format: suzanoo-mapping-exchange-1-pilot (.exchange.json suggested).
+This is a versioned pilot contract, not a frozen industry-wide schema. It contains
+origin work/revision/model identity, current saved native revision evidence,
+normalized schedule, referenced native elements, explicit relationship records
+and validation results. Absolute RVT paths are omitted from exchange.
+
+Export validates references/cardinality, requires exact native resolution and
+writes a NEW filename. Missing/ineligible related elements block successful
+export while remaining in work. Incomplete/mixed-awareness dates produce
+relationship-valid output with time_ready=false; source-local complete dates
+remain source-local, not timezone-certified. Geometry correspondence is explicitly
+not evaluated. Export never changes working assignments.
+
+Renderer adapters later own object-handle resolution, export-artifact crosswalks,
+transforms, geometry decomposition and playback. No 4DBIM, renderer, mesh data,
+IFC export or guessed IFC aliases are implemented in MS-1.
+
+7. TEST EVIDENCE AND REMAINING ACCEPTANCE
+
+Executed: 63 unittest tests PASS, 0 failures, 0 skipped, in 4.611 seconds.
+Runtime: Linux CPython 3.12.14; exact environment in evidence JSON.
+Command: python -m unittest discover -s tests/mapping -v
+Full log: docs/mapping/evidence/AUTOMATED_TEST_RESULTS.txt
+
+Coverage includes:
+- Real P6 file hash/counts/A1660/Thai/nil dates, multi-project selection, duplicate
+  source IDs, WBS cycles/orphans, malformed/DTD/UTF-16 declarations and date cases.
+- Many-to-many pair preservation, idempotency, individual removal, atomic collision
+  refusal, reassign identity/note retention, missing/replacement safety and export.
+- Disk reopen, prior backup, recovery-to-new, failed staging/replacement, stale
+  external data, second writer, process exit lock release and corrupt JSON.
+- Headless UI command-loop tests with explicit fake Revit/WPF adapters: Add/Review/
+  Reassign/notes/Remove/Undo/reopen/export, cancellation, document-switch guards,
+  event denial, selection exclusions and category-level lookup policies.
+- 500 plain-data elements associated with two activities => 1000 valid pairs.
+  This is a data-scale test, NOT a Revit desktop performance benchmark.
+- XAML XML/event-handler consistency and absence of model-write calls.
+
+Seven production Python files also pass CPython parsing and Python-2 grammar
+checks. These do not establish IronPython/WPF/.NET overload execution.
+No Revit desktop or production Windows/.NET persistence execution occurred here.
+MS-0's accepted runtime is the target, not proof that this new UI has passed.
+
+Run Gates A–E in INSTALL_AND_DESKTOP_ACCEPTANCE.txt using a real RVT/P6 file.
+They focus on the new many-to-many/edit/resume/recovery/export loop. No repeat
+IFC campaign is requested. Untested physical categories must be recorded, not
+counted as desktop verified. If any gate fails, retain the working file/error
+and report it; do not treat the pilot as accepted or attempt source-file repair.
+
+8. DELIVERY / SCOPE / UNRESOLVED ISSUES
+
+Complete new files retain exact repository-relative paths in the ZIP.
+MANIFEST_SHA256.txt lists every delivered file except itself, status NEW, byte
+size and SHA-256. No existing repository file is edited/deleted. Dependency
+folders, caches, earlier proof runs, native RVT and IFC are not included.
+The original 009_P6.xml test fixture is included unchanged for reproducibility;
+source SHA-256 is recorded by the automated test.
+
+Remaining limitations: actual desktop acceptance pending; one-step session Undo;
+local single-writer file operation only; strict P6 V24.12 profile; limited physical
+categories; explicit operator responsibility for copied-model lineage; no schedule
+revision migration; whole elements only; no renderer readiness claim.
+No unresolved PO product conflict was found. Ordinary decisions above implement
+the authorized scope; they do not reintroduce single-active-activity restrictions.
+
+Preserved V2 requirement: reuse independently authored Structural RVT mappings
+when linked into an Architectural host. External source-model mappings remain
+separate from future host occurrence placement; no assumption that mapping
+travels automatically with links, and no linked-model implementation here.
+
+Coordinator/PO next action: install this package, run the concise desktop gates,
+and accept MS-1 only against those actual results. MS-2 is not started.
+
+Technical documentation consulted:
+https://docs.pyrevitlabs.io/reference/pyrevit/forms/_ipy/
+https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Advanced_Topics/Revit_API_Revit_API_Developers_Guide_Advanced_Topics_External_Events_html.html
+https://learn.microsoft.com/en-us/dotnet/api/system.io.file.replace
+Documentation informs API choices; executed and unexecuted evidence are separated above.

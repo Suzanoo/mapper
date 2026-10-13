@@ -1,0 +1,6 @@
+title: Mapping
+tooltip: Host model / P6 mapping authoring. Many-to-many relationships; external autosave.
+author: Suzanoo
+engine:
+  persistent: true
+  clean: false

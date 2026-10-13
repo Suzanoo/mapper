@@ -1,0 +1,133 @@
+MS-1 — INSTALLATION AND DESKTOP ACCEPTANCE
+Target: Revit 2026.1 / existing pyRevit IronPython 2.7 environment from MS-0
+Status: 63 automated tests PASS; actual Revit/WPF/.NET persistence PENDING DESKTOP
+
+ติดตั้ง
+1. แตก REVIT_PYREVIT_MAPPING_MS1_CHANGED_FILES.zip
+   ไฟล์ใน ZIP วางตาม repository-relative paths แล้ว เป็นไฟล์ใหม่ทั้งหมด
+   ไม่ต้องทับ MyTools.extension และไม่ต้องทำ Git เพื่อทดลอง
+2. Copy MappingAuthoring.extension ทั้งโฟลเดอร์ไปที่:
+   %APPDATA%\pyRevit\Extensions\MappingAuthoring.extension
+   หรือใช้ custom extension directory เดิมขององค์กร
+   อย่าติดตั้ง extension นี้ซ้ำสองตำแหน่ง
+3. Reload pyRevit หรือปิด/เปิด Revit ใช้ IronPython engine เดิมที่ผ่าน MS-0
+   จะมี tab Mapping > panel Authoring > ปุ่ม Mapping
+   ไม่ต้องติดตั้ง pip, pandas, IfcOpenShell หรือ Python เพิ่มใน Revit
+   MappingMS0 extension เก่าอยู่ร่วมกันได้ แต่ไม่ใช่ปุ่มใช้งานใหม่
+4. เปิดสำเนา native host RVT ที่ไม่ใช่ workshared แล้ว Save ก่อน
+   ใช้โฟลเดอร์ข้อมูล local NTFS ที่เขียนได้ ไม่ใช้ network/shared/sync folder
+   หาก Revit แจ้งว่า model modified ให้ Save RVT แล้วค่อยกดคำสั่ง Mapping
+   เครื่องมือนี้ไม่ Save RVT ไม่เขียน parameter และไม่แก้ geometry ให้เอง
+
+วิธีใช้
+- New + Import P6: เลือก P6 Professional V24.12 XML แล้วเลือก project
+  ตรวจจำนวน activities/WBS/warnings และสร้าง Project.mapping.json ชื่อใหม่
+  ใช้ XML จริงเดิมได้ หรือ tests/mapping/fixtures/009_P6.xml ที่แนบ
+  ตัวอย่างนี้มี 209 activities / 72 WBS; A1660 เป็นงานก่ออิฐมวลเบา ฉาบเรียบ
+- Open work: เปิด .mapping.json เดิม ไม่ใช่ .exchange.json หรือ capture.json
+  ต้องยืนยันว่าเป็น logical model เดิม แม้ชื่อไฟล์/ProjectInformation ID ตรงกัน
+  หากเป็นคนละ project/fork ให้ New ไม่ยืนยันว่าเป็น lineage เดิม
+- ค้น activity ฝั่งซ้ายด้วย code/name/WBS แล้วคลิกรายการเป้าหมาย
+- กลับไปเลือก elements ใน Revit โดยไม่ต้องปิดหน้าต่าง Mapping
+  กด Use current selection ตรวจ eligible/excluded ที่ช่องข้อความด้านล่าง
+  รองรับ Walls, Floors, Structural Columns, Structural Framing
+  category อื่น, links, containers, Parts, nested families ถูกแจ้ง excluded
+- กด Add to target activity ตรวจเป้าหมายและจำนวน NEW relationships แล้วยืนยัน
+  เป็น ADD ไม่ใช่ REPLACE: element เดิมผูกหลาย activities ได้
+  กดซ้ำคู่เดิมไม่เพิ่ม duplicate และไม่เพิ่ม revision
+  Selection ที่ใช้คือ captured buffer ล่าสุด ไม่ใช่การเปลี่ยน native selection
+  หลัง Capture โดยอัตโนมัติ; หากต้องการชุดใหม่ให้ Use current selection อีกครั้ง
+- ฝั่งขวาเป็นหนึ่งแถวต่อหนึ่งความสัมพันธ์ ใช้ Ctrl/Shift เลือกหลายแถว
+  ค้นได้ด้วย activity, ElementId, UniqueId, category, level, status หรือ note
+  Target activity only ใช้ review กิจกรรมหนึ่ง -> elements
+  Captured elements only ใช้ review elements ที่เลือก -> ทุก activities
+  Unknown level ไม่ใช่การเดาระดับหรือพื้นที่ก่อสร้าง
+- Select in Revit เลือก native elements จากแถวที่เลือก โดยไม่แก้โมเดล
+- Reassign rows เปลี่ยน activity เฉพาะคู่ที่เลือกไปยัง target ฝั่งซ้าย
+  ถ้าจะเกิดคู่ element/activity ซ้ำ ระบบปฏิเสธทั้งคำสั่ง ไม่รวมคู่ให้เอง
+  ถ้าต้องการให้เหลือคู่ปลายทางที่มีอยู่แล้ว ให้ Remove เฉพาะคู่เก่าที่ไม่ต้องการ
+- Edit note แก้ข้อความของคู่ที่เลือก; ค่าว่างล้างข้อความ; limit 2000 characters
+- Remove rows ลบเฉพาะความสัมพันธ์ ไม่ลบ element และไม่ลบกิจกรรมอื่นของมัน
+  หากต้องเปลี่ยน element endpoint ให้ Add คู่ใหม่และ Remove คู่เก่าอย่างชัดเจน
+- ทุก edit ที่ยืนยันจะ auto-save เป็น revision ใหม่ พร้อม .mapping.json.bak
+  Undo last edit ย้อน batch ล่าสุดใน session โดยสร้าง revision ใหม่
+  เมื่อปิด/เปิดงานใหม่ undo memory ไม่อยู่ แต่ผล undo ที่บันทึกแล้วอยู่
+- Save / Check ยืนยันไฟล์บน disk และตรวจ native identities ไม่มี unsaved queue
+  Close work ปิดไฟล์และปล่อย writer lock; ปิด palette ก็ทำเช่นเดียวกัน
+- Validate แสดง unresolved elements/date readiness
+  ชิ้นที่ลบแล้วเก็บสถานะ missing ไม่โยกไปชิ้นทดแทน
+- Export สร้างชื่อใหม่ เช่น Mapping-r4.exchange.json จาก saved revision
+  unresolved elements จะ block export; ข้อมูล mapping เดิมยังอยู่ครบ
+  วันที่ไม่ครบอนุญาต relationship export พร้อม time_ready=false ไม่แต่งวันที่
+  Export ไม่ใช่ไฟล์สำหรับกลับมาแก้ไข และไม่มี geometry/renderer/IFC crosswalk
+- Check source XML เทียบ hash: XML ที่เปลี่ยนถูกปฏิเสธการแทน snapshot
+  ไม่มี schedule migration; การเปิดงานต่อไม่ต้องมี XML ต้นทางอยู่ที่ path เดิม
+
+DESKTOP ACCEPTANCE — ตรวจเฉพาะวงจรใหม่ ไม่ทำ MS-0 campaign ซ้ำ
+ใช้สำเนา RVT เท่านั้น บันทึก PASS/FAIL และ screenshot/error เมื่อจำเป็น
+
+Gate A — Launch/import/category selection
+เปิด palette, New + Import XML จริง, ตรวจ project, counts, Thai text และวันที่
+เลือก host elements 4 ชิ้น กด Capture ตรวจจำนวน/ElementId/level ที่เห็น
+ทดลอง mixed selection กับ link/annotation หากมี ต้องเห็นเหตุผล excluded
+ถ้ามี Floors/Structural Columns/Framing ในโมเดล ให้รวมตัวอย่างและตรวจ level
+หมวดที่ไม่มีให้จด NOT AVAILABLE ไม่ต้องสร้างโมเดลใหม่เพื่อทำรอบนี้
+Expected: palette ใช้คู่กับ native Revit selection ได้; ไม่มี RVT changes
+
+Gate B — Many-to-many และแก้ไขรายคู่
+ให้ A/B/C เป็นกิจกรรมจริงสามกิจกรรมที่เลือกสำหรับการทดลอง
+1. Assign 4 elements -> A: 4 relationships
+2. Capture เฉพาะ element E1 แล้ว Add -> B: รวม 5 relationships
+   E1 ต้องมีทั้ง A และ B; กด Add B ซ้ำยังเป็น 5 และ revision ไม่เพิ่ม
+3. Review E1 ด้วย Captured elements only: ต้องเห็น A และ B
+   Select in Revit จากแต่ละแถวต้องเป็น E1 เดิม
+4. เลือกคู่ E1->A แล้ว Reassign ไป C: รวม 5; E1->B ยังอยู่
+5. Edit note ของ E1->C เป็นภาษาไทย แล้ว Remove E1->B: รวม 4
+   Undo last edit: กลับเป็น 5; note ของ E1->C ยังอยู่
+6. ลอง Reassign E1->C ไป B ที่มีแล้ว: ต้อง refuse ไม่เปลี่ยน 5 คู่
+   Cancel การ Remove ต้องไม่เปลี่ยน revision
+
+Gate C — Save/Close/Reopen
+กด Save / Check จด revision แล้ว Close work และปิด palette
+ปิด/เปิด Revit หรือ RVT ใหม่ เปิด work เดิมและยืนยัน lineage
+Expected: 5 คู่จาก Gate B, E1->B และ E1->C, note ไทย และ revision เดิม
+ลองย้าย XML ต้นทางชั่วคราว (เก็บไว้ ไม่ลบ) งานต้องเปิดต่อได้
+Undo เดิมไม่ต้องอยู่ข้าม session แต่ความสัมพันธ์ต้องอยู่ครบ
+
+Gate D — Missing, binding and cancellation
+ในสำเนาทดสอบ ลบ E1 แล้ว Save RVT; Validate ต้องรายงาน E1 missing
+ทั้งสองความสัมพันธ์ของ E1 ต้องยังอยู่และ Export ถูก block
+ไม่ต้องทำ IFC export ซ้ำ หากมีชิ้นทดแทนก็ห้าม resolve เป็น E1 เอง
+เลือกและ Remove คู่ของ E1 อย่างชัดเจน: คู่ของ E2/E3/E4 ยังอยู่
+สลับไป RVT อีกไฟล์แล้ว Capture/Assign ต้อง refuse จนกลับ model เดิม
+Cancel New/Open/pickers ต้องคง work เดิม; empty selection ห้าม assign สำเร็จ
+
+Gate E — Exchange/recovery/no model writes
+Export หลังแก้ unresolved: เลือกชื่อใหม่และตรวจจำนวน relationships/elements
+Export ซ้ำชื่อเดิมต้อง refuse overwrite; work file ไม่เปลี่ยนจากการ Export
+Recover backup เลือก .mapping.json.bak แล้วบันทึกเป็นชื่อใหม่
+Expected: ได้ previous committed revision ที่เพิ่ม recovery event; original
+file ไม่ถูกทับ หากจะกลับงานล่าสุด ให้ Close work และ Open original อีกครั้ง
+สังเกต Revit: หลัง Save RVT แล้วทำเฉพาะ Mapping ต้องไม่มี parameter/geometry
+changes หรือ Revit Undo transaction ที่สร้างโดย Mapping
+จดเวลาคร่าว ๆ ของ Add/Review ด้วยจำนวน elements ที่ใช้จริง ไม่เดาประสิทธิภาพ
+
+ส่งกลับ Coordinator
+- PASS/FAIL ของ Gates A–E; หมวดที่ทดลอง/ไม่ได้ทดลอง
+- .mapping.json ล่าสุด และ .exchange.json ที่สร้างสำเร็จ
+- error output หากมี; ไม่ต้องส่ง RVT หรือ IFC ซ้ำ
+- ถ้า version/engine เปลี่ยนจาก MS-0 ให้ระบุรุ่นใหม่
+สำรองข้อมูล: .bak คือเพียงหนึ่ง revision ก่อนหน้า ไม่ใช่ backup ระยะยาว
+Copy .mapping.json/.bak ไปสำรองหลัง Close work; ห้ามแก้ไฟล์มือขณะเปิดใช้งาน
+.lock ที่เหลือหลังปิด/crash เป็น marker ปกติ OS lock ถูกปล่อยเมื่อ process จบ
+ห้ามลบ lock file เพื่อข้ามคำเตือนว่ามี writer อีกตัว
+หากเปิดไฟล์ corrupt/future-version ไม่สำเร็จ อย่าเขียนทับ ให้ Recover backup
+เป็นไฟล์ใหม่ หรือเก็บต้นฉบับส่งตรวจ
+
+AUTOMATED TESTS — สำหรับ Engineer/Coordinator บน CPython 3.9+
+เปิด terminal ที่ repository root หรือ root ของ ZIP:
+  python -m unittest discover -s tests/mapping -v
+ตรวจ exchange แบบ offline:
+  python tools/validate_mapping_exchange.py "C:\path\Mapping-r4.exchange.json"
+ไม่ต้องใช้คำสั่งเหล่านี้เพื่อติดตั้งหรือใช้งานใน Revit
+Offline validator ตรวจ data contract เท่านั้น ไม่ lookup ใน RVT/IFC ใหม่

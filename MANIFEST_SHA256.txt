@@ -1,0 +1,24 @@
+MS-1 CHANGED-FILE MANIFEST
+Baseline: Suzanoo/revit-toolkit main @ 3b2b66272b826653757a3baf5664b4e8be9313ef
+All paths repository-relative. All files NEW; no existing files changed or deleted.
+Manifest excludes itself. Tests fixture is an unchanged copy of the supplied P6 XML.
+
+NEW | MappingAuthoring.extension/Mapping.tab/Authoring.panel/Mapping.pushbutton/bundle.yaml | 164 bytes | SHA256 cff3e3ec6666de6e6b947763aff29c0d2028ee5d0edeeba4ca0e71f62859a865
+NEW | MappingAuthoring.extension/Mapping.tab/Authoring.panel/Mapping.pushbutton/script.py | 145 bytes | SHA256 5e4ab4ab358d5b80ec298ad4efd5763af4917c34157fbea2102d1e46971cf3e8
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/__init__.py | 116 bytes | SHA256 b7af9f8e2605e8ee68f6f0c104b85ea9126bd7a72e0f1ad15f58ff5975cea460
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/core.py | 14126 bytes | SHA256 8ca2a64d78455775f371c5e4f26d7cb76204dda5077f73c72ccfca0b8379ebae
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/p6.py | 9107 bytes | SHA256 55a74798dd9d2bbb8c8460dc17b18d73c8555e42412c0c7eb3d6db26948fb51b
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/revit_adapter.py | 5310 bytes | SHA256 c3b6614e7c840434959fe41348b596d6d4b2fe9bfb9ce60589e3dd57fd001b6c
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/storage.py | 7982 bytes | SHA256 71ffbabfa8f6a9fe415dce32139c87bfeeef815de8ed934ed9c19fdc54b42e17
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/ui.py | 21374 bytes | SHA256 35fd6c2bf6fea0c8ea474881bc82a0fd6fa99e7629d0e856c99e23c930219168
+NEW | MappingAuthoring.extension/lib/suzanoo_mapping/window.xaml | 4739 bytes | SHA256 692c774900a37b878d0936b5a6ca8eaa8d4286a75abd415c33b20e8f97a472e6
+NEW | docs/mapping/INSTALL_AND_DESKTOP_ACCEPTANCE.txt | 14287 bytes | SHA256 cc3fd3302aff0b19da3db23cf6576f2435d5c28507659a12dd2ba00608b0fd7b
+NEW | docs/mapping/README.md | 1015 bytes | SHA256 c7d3833fcab4f901ee7b7ed4c6639fa16aaa021f701d824c24f00b050220c436
+NEW | docs/mapping/REVIT_PYREVIT_MAPPING_MS1_IMPLEMENTATION_REPORT.txt | 13821 bytes | SHA256 7f6aa1d0ab3a894dde9415d568a92b2b126e4f8cb066ce50e2a4203aaacd36c4
+NEW | docs/mapping/evidence/AUTOMATED_TEST_RESULTS.txt | 8318 bytes | SHA256 bf1c2f415d1be565150c26acc08f3edf360086e02c444b2c4bd1afc3d493d88c
+NEW | docs/mapping/evidence/STATIC_AND_ENVIRONMENT.json | 914 bytes | SHA256 02c3245306e285baeea78e99e6008954d126c63d9cb75f3ce8470d877114fe91
+NEW | tests/mapping/fixtures/009_P6.xml | 963947 bytes | SHA256 545ffe1c0a9e5bb36d98dda09e7bc32336b9ecafcffb88c5492d8cf91b70446e
+NEW | tests/mapping/test_mapping.py | 19462 bytes | SHA256 efe09287da9d73d41716e191aaf3080afe0c5ee25f8a49bd9db136ef79e4e2fa
+NEW | tests/mapping/test_package.py | 2986 bytes | SHA256 04fcb1a79c76bc97b054cd853e9f08eb4448f7256847dc0778a22bfecbf6265a
+NEW | tests/mapping/test_revit_boundary.py | 16453 bytes | SHA256 4af2e04bea3c4dc938bc4d63877b25fd01b41303839868e34781362d956efa24
+NEW | tools/validate_mapping_exchange.py | 1104 bytes | SHA256 72af92ad851523466b0078dd54e4501ebbcbe2c800294ee66d71f836de9d5d5f

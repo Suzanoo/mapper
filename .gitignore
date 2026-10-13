@@ -1,0 +1,61 @@
+# Python / pyRevit
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+*.zip
+
+# Local mapping and exchange data (project/user data)
+*.mapping.json
+*.mapping.json.bak
+*.exchange.json
+*.mapping.lock
+*.lock
+
+# Local schedule/model inputs and generated exports
+*.rvt
+*.rfa
+*.rte
+*.rft
+*.ifc
+*.ifczip
+*.ifcxml
+*.xml
+*.xlsx
+*.xlsm
+*.dwg
+*.dxf
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+~$*
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Note: Commit intentional sanitized fixtures using git add -f,
+# or refine these rules when Work establishes test-data policy.
