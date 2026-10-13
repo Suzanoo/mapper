@@ -1,10 +1,12 @@
 MS-1 — INSTALLATION AND DESKTOP ACCEPTANCE
 Target: Revit 2026.1 / existing pyRevit IronPython 2.7 environment from MS-0
-Status: 63 automated tests PASS; actual Revit/WPF/.NET persistence PENDING DESKTOP
+Current status: MS-1 ACCEPTED by PO; UI-01 Desktop Acceptance PENDING.
+See STATUS.md and UI01_DESKTOP_ACCEPTANCE.txt. Gates A-E below are the
+retained full MS-1 procedure, not a request to repeat the accepted campaign.
 
 ติดตั้ง
-1. แตก REVIT_PYREVIT_MAPPING_MS1_CHANGED_FILES.zip
-   ไฟล์ใน ZIP วางตาม repository-relative paths แล้ว เป็นไฟล์ใหม่ทั้งหมด
+1. ใช้ repository baseline 69c50fa และ overlay UI-01 changed-file ZIP
+   ZIP เป็นไฟล์ที่เปลี่ยนเท่านั้น ต้องเก็บไฟล์ baseline ที่เหลือไว้ครบ
    ไม่ต้องทับ MyTools.extension และไม่ต้องทำ Git เพื่อทดลอง
 2. Copy MappingAuthoring.extension ทั้งโฟลเดอร์ไปที่:
    %APPDATA%\pyRevit\Extensions\MappingAuthoring.extension
@@ -22,12 +24,13 @@ Status: 63 automated tests PASS; actual Revit/WPF/.NET persistence PENDING DESKT
 วิธีใช้
 - New + Import P6: เลือก P6 Professional V24.12 XML แล้วเลือก project
   ตรวจจำนวน activities/WBS/warnings และสร้าง Project.mapping.json ชื่อใหม่
-  ใช้ XML จริงเดิมได้ หรือ tests/mapping/fixtures/009_P6.xml ที่แนบ
-  ตัวอย่างนี้มี 209 activities / 72 WBS; A1660 เป็นงานก่ออิฐมวลเบา ฉาบเรียบ
+  ใช้ XML จริงเดิม หรือ tests/mapping/fixtures/sample_p6.xml (synthetic)
+  fixture สาธารณะมี 3 activities / 4 WBS; XML โครงการจริงไม่ได้แนบใน repo
 - Open work: เปิด .mapping.json เดิม ไม่ใช่ .exchange.json หรือ capture.json
   ต้องยืนยันว่าเป็น logical model เดิม แม้ชื่อไฟล์/ProjectInformation ID ตรงกัน
   หากเป็นคนละ project/fork ให้ New ไม่ยืนยันว่าเป็น lineage เดิม
-- ค้น activity ฝั่งซ้ายด้วย code/name/WBS แล้วคลิกรายการเป้าหมาย
+- ขยาย WBS Tree ฝั่งซ้าย หรือค้นด้วย code/name/WBS แล้วคลิก Activity เป้าหมาย
+  WBS เป็นหัวข้อสำหรับนำทาง ไม่ใช่ Activity; คลิก WBS จะล้าง target
 - กลับไปเลือก elements ใน Revit โดยไม่ต้องปิดหน้าต่าง Mapping
   กด Use current selection ตรวจ eligible/excluded ที่ช่องข้อความด้านล่าง
   รองรับ Walls, Floors, Structural Columns, Structural Framing

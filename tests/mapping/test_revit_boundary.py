@@ -34,12 +34,34 @@ class WPF:
         self.Closing, self.Closed = EventHook(), EventHook()
         for name in ('Workspace', 'Summary', 'Activities', 'ActivitySearch', 'ActivityDetails',
                      'Relationships', 'ReviewSearch', 'OnlyActivity', 'OnlyCaptured',
-                     'Messages', 'CaptureSummary'):
+                     'Messages', 'CaptureSummary', 'TreeStatus'):
             setattr(self, name, Control())
+        self.Activities = TreeControl()
 
 
 class Item:
     def __init__(self): self.IsSelected = False
+
+
+class TreeItem(Item):
+    def __init__(self):
+        super().__init__()
+        self.Items = Items()
+        self.IsExpanded = False
+
+
+class TreeControl:
+    def __init__(self):
+        self.Items = Items()
+    @property
+    def SelectedItem(self):
+        stack = list(self.Items)
+        while stack:
+            item = stack.pop()
+            if item.IsSelected:
+                return item
+            stack.extend(item.Items)
+        return None
 
 
 class Id:
@@ -106,7 +128,7 @@ forms = types.SimpleNamespace(WPFWindow=WPF, alert=Mock(return_value=True), pick
     SelectFromList=types.SimpleNamespace(show=Mock(return_value=None)))
 module_defs = {'pyrevit': {'DB': DB, 'forms': forms}, 'Autodesk': {}, 'Autodesk.Revit': {},
     'Autodesk.Revit.UI': {'IExternalEventHandler': object, 'ExternalEvent': types.SimpleNamespace(Create=Mock())},
-    'System': {}, 'System.Windows': {}, 'System.Windows.Controls': {'ListBoxItem': Item},
+    'System': {}, 'System.Windows': {}, 'System.Windows.Controls': {'ListBoxItem': Item, 'TreeViewItem': TreeItem},
     'System.Collections': {}, 'System.Collections.Generic': {'List': GenericList}}
 for name, attrs in module_defs.items():
     mod = types.ModuleType(name); mod.__dict__.update(attrs); sys.modules[name] = mod

@@ -1,0 +1,76 @@
+UI-01 CHANGED FILES — baseline 69c50faa97569d946d43723b2df0e0fafb4d22a4
+Complete overlay files; no deletions. Manifest excludes itself.
+Old/new hashes refer to UTF-8 fetched baseline bytes and delivered file bytes.
+
+NEW MappingAuthoring.extension/lib/suzanoo_mapping/activity_tree.py
+  bytes: 5058
+  baseline_sha256: -
+  delivered_sha256: 66ef7987bb97c4c168509917c8009701b5813da5911da1524906709276da064d
+MODIFIED MappingAuthoring.extension/lib/suzanoo_mapping/ui.py
+  bytes: 23454
+  baseline_sha256: 35fd6c2bf6fea0c8ea474881bc82a0fd6fa99e7629d0e856c99e23c930219168
+  delivered_sha256: 079302c7749183a465da10e66f5c97f0c1446518b7987106e42044f0a8f7ae02
+MODIFIED MappingAuthoring.extension/lib/suzanoo_mapping/window.xaml
+  bytes: 5087
+  baseline_sha256: 692c774900a37b878d0936b5a6ca8eaa8d4286a75abd415c33b20e8f97a472e6
+  delivered_sha256: a8eee586a24717c3bd53e5b4ec7bbe4b677648483ed93f535b5b70e3608b203a
+MODIFIED README.md
+  bytes: 3019
+  baseline_sha256: 4c863d9d1aeaabaae58b6f7f1a6ed24ac8291ec9c939c11cfa987017c574b174
+  delivered_sha256: d4d47e39c994990b4764116ad5630fdebd602af536715870379bf24e9cc5355e
+NEW docs/ENGINEERING.md
+  bytes: 1927
+  baseline_sha256: -
+  delivered_sha256: da22a255b334cbb453f99ff3197514a1efa253cf4922bd93db13ab87da97c946
+NEW docs/mapping/CONTRACTS.md
+  bytes: 4470
+  baseline_sha256: -
+  delivered_sha256: 3a221aa85510da0b89ca4ed5d9147057da65c289f3b68095375a20218d40905d
+MODIFIED docs/mapping/INSTALL_AND_DESKTOP_ACCEPTANCE.txt
+  bytes: 14607
+  baseline_sha256: cc3fd3302aff0b19da3db23cf6576f2435d5c28507659a12dd2ba00608b0fd7b
+  delivered_sha256: a11c5f36273740b5a2bb4e7b022a11c579c140c438d86cea76179ab304162927
+NEW docs/mapping/MAPPER_MILESTONE_ROADMAP_INVESTIGATION.txt
+  bytes: 10368
+  baseline_sha256: -
+  delivered_sha256: bc558aa58754852b3da0f11243d1e8383cf2b70133d529d2f07a1c2e94c80fd0
+MODIFIED docs/mapping/README.md
+  bytes: 1214
+  baseline_sha256: c7d3833fcab4f901ee7b7ed4c6639fa16aaa021f701d824c24f00b050220c436
+  delivered_sha256: 553f660fcac463e05e8b5fe6982f8ee9d66b57d7eff305b53a0a63c6d3459788
+NEW docs/mapping/STATUS.md
+  bytes: 1216
+  baseline_sha256: -
+  delivered_sha256: 0652e1c4655b747d98222b9919c6d613c5e9649989c02afc39e9c0282f362d96
+NEW docs/mapping/UI01_DESKTOP_ACCEPTANCE.txt
+  bytes: 2289
+  baseline_sha256: -
+  delivered_sha256: 18c616cda188b5efc751a1aba5765ef9c8d543b483ab8ba912ec9ee7dfc4eff7
+NEW docs/mapping/UI01_IMPLEMENTATION_REPORT.txt
+  bytes: 5418
+  baseline_sha256: -
+  delivered_sha256: 6f46aae65960d14281ae62ebf206e64af9d25ee14e6086a8ded31b89686a6c4c
+NEW docs/mapping/evidence/UI01_AUTOMATED_TEST_RESULTS.txt
+  bytes: 22628
+  baseline_sha256: -
+  delivered_sha256: 5b0395f4106c39603f604c88bd2c7fb87cad19f8518bc535b0a887116db7011b
+NEW tests/mapping/fixtures/sample_p6.xml
+  bytes: 2332
+  baseline_sha256: -
+  delivered_sha256: a8972440218cb3c240c526a310e86cc649d6fc9032ab414be667bce78ae1f98c
+NEW tests/mapping/test_activity_tree.py
+  bytes: 9125
+  baseline_sha256: -
+  delivered_sha256: 34ce383769429a921e8217f3f6dd546006eda2d93bad8b65bb2bb9d6859e3059
+MODIFIED tests/mapping/test_mapping.py
+  bytes: 19703
+  baseline_sha256: efe09287da9d73d41716e191aaf3080afe0c5ee25f8a49bd9db136ef79e4e2fa
+  delivered_sha256: c290fcd746d23306fc1d3e32e5d78ba72eb3c324a6934c3def862a8021a18256
+MODIFIED tests/mapping/test_package.py
+  bytes: 3009
+  baseline_sha256: 04fcb1a79c76bc97b054cd853e9f08eb4448f7256847dc0778a22bfecbf6265a
+  delivered_sha256: 0a536b8ceea3fc519df25534ad4e25f0c0a3f2bb9c3bc41c66e80424d596a387
+MODIFIED tests/mapping/test_revit_boundary.py
+  bytes: 16987
+  baseline_sha256: 4af2e04bea3c4dc938bc4d63877b25fd01b41303839868e34781362d956efa24
+  delivered_sha256: 96bcddb1135da628b4caf425e30610d902ea7fa4f8ecfc2c89f1e391f23c5416

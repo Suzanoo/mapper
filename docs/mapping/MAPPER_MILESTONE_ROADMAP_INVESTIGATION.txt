@@ -1,0 +1,152 @@
+MAPPER — INDEPENDENT MILESTONE ROADMAP INVESTIGATION
+2026-10-13 | Baseline main 69c50fa | Proposal only; no future implementation
+
+FINDING AND RECOMMENDATION
+Close UI-01 with the short desktop gate, then prioritize controlled schedule
+revision handling. Current source-hash-qualified schedule identity is safe
+within a snapshot but intentionally refuses changed XML. Real projects revise
+schedules; losing continuity or encouraging manual JSON edits is the clearest
+remaining operational gap. A viewer is not needed to solve it.
+
+Recommended order: REV-01 → XCH-01 → LINK-01 → optional 4D-01.
+This is priority, not a rigid dependency chain: LINK-01 may move ahead of XCH-01
+if structural-source reuse is the next concrete PO need. Native link reuse does
+not depend on IFC. No proposed milestone is authorized by this report.
+
+EVIDENCE AND CONFIDENCE
+Executed: UI-01 automated tests, existing core/storage/boundary regressions,
+original P6 source normalization and tree coverage. Inspected current source,
+working/exchange contracts and preserved MS-1 report. PO states MS-0/MS-1 are
+accepted. No new Revit/IFC desktop experiment was performed. The supplied MS-0
+history establishes a limited native/IFC feasibility basis, not universal
+cross-export or multi-model identity stability. Recommendations below are
+engineering judgments and future acceptance targets, not verified features.
+
+REV-01 — CONTROLLED SCHEDULE REVISION REVIEW
+Problem: a changed schedule cannot replace the snapshot without risking
+relationships or manually recreating the work document.
+Scope: explicit import of a candidate revision; project/lineage confirmation;
+old/new activity diff; proposed matches with provenance/confidence; operator
+review of ambiguous, missing and changed activities; atomic application with
+recoverable prior state. Preserve relationship identity and annotations where
+endpoints are explicitly matched. Keep unresolved relationships visible.
+Exclude: automatic unattended migration, MSP, scheduler writeback, multiple
+simultaneously active snapshots and resource/cost scheduling.
+Visible result: user previews counts and every impacted relationship before
+applying a revision, or cancels without changing the original work.
+Technical approach: separate schedule lineage from snapshot identity before
+migration. Compare actual paired exports; consider GUID and project-qualified
+Activity Id as evidence, never assume ObjectId, name or WBS path is stable.
+GUID uniqueness in one file is not proof of continuity across databases/copies.
+Do not guess from names. Determine versioned compatibility/migration only in
+this separately authorized milestone; preserve existing files readably.
+Dependencies/risks: real before/after P6 exports, renamed IDs, copied projects,
+reused IDs, date changes and deleted activities. Review burden must be bounded.
+Acceptance: unchanged/added/renamed/deleted/ambiguous cases; many-to-many
+preserved; no silent remap; cancellation/failure leaves original intact;
+reopen and export identify the applied snapshot; recover prior state.
+
+XCH-01 — NEUTRAL EXCHANGE CONSUMER AND IDENTITY CROSSWALK PROOF
+Problem: syntactically valid exchange does not prove that an independent
+consumer can resolve geometry or native/IFC identities reliably.
+Scope: independent read-only consumer/contract checks; a bounded set of real
+native captures and IFC exports; explicit crosswalk sidecar recording model,
+export artifact hash/settings/version, native identity, IFC identity and
+matched/unmatched/ambiguous status. Evaluate zero/one/many outcomes explicitly.
+Exclude: viewer selection, authoring in IFC, geometry splitting, universal
+cross-export stability claims and changing working identity to IFC GUID.
+Visible result: a portable validation report that states exactly what resolves
+for one declared model/export pair and lists unresolved cases.
+Dependencies/risks: real exporter output, exporter/version differences,
+non-exported elements, aggregation/decomposition and category differences.
+GetExportId is evidence to compare against actual IFC, not proof that every
+native element creates exactly one IFC object.
+Acceptance: a consumer independent of the authoring UI verifies references;
+wrong/stale export rejected or clearly unresolved; ambiguous matches never
+silently chosen; repeat-export results scoped to tested settings; original
+many-to-many data round-trips without renderer IDs entering core identity.
+
+LINK-01 — REUSABLE SOURCE-MODEL MAPPING IN LINKED HOSTS
+Problem: independently authored structural mappings should be reusable when
+that RVT is linked into an architectural host without remapping every element.
+Scope: explicitly associate an external source mapping document with a linked
+source model; distinguish source element identity from host link occurrences;
+review repeated placements, unloaded/missing sources and lineage mismatches.
+Author source relationships once; make host occurrence/application policy
+explicit. Preserve source authoring ownership and avoid implicit writeback.
+Exclude initially: arbitrary nested link authoring, automatic source discovery,
+MSP and geometry allocation. Exact nesting/workshared scope needs its own
+qualification because today's pilot rejects workshared documents.
+Visible result: attach a structural map, see which source elements resolve in
+which link instance, and reuse approved relationships without manual remapping.
+Alternatives: external mapping association is recommended because it fits
+current no-model-write workflow and can be versioned independently. Embedded
+RVT metadata might improve discoverability but adds transactions, permissions,
+copy/lineage semantics and deployment coupling; it does not automatically make
+external schedule work travel correctly with links. A registry can help discovery
+later but is unjustified infrastructure for the current one-writer pilot.
+Dependencies/risks: source-model lineage, repeated placements/transforms,
+source revisions, host-specific activity overrides and schedule lineage.
+RevitLinkType and RevitLinkInstance are distinct; source element alone is not a
+unique host occurrence. GetLinkDocument is read-only, not an authoring shortcut.
+Acceptance: one source used in two placements retains source identity and
+separate occurrences; missing/unloaded/mismatched sources are explicit;
+no remapping to replacements; no writes to linked model; source revisions and
+host overrides follow an approved conflict policy rather than silently merging.
+PO decision for this milestone: should source activities apply identically to
+all placements, or may each placement use different host schedule activities?
+
+4D-01 — OPTIONAL DOWNSTREAM CONSUMPTION PROOF
+Problem: an element mapped to several activities has no inherent single
+animation interval, color or task role.
+Scope: define consumer semantics with PO examples (formwork/rebar/concrete,
+parallel tasks, actual vs planned dates, missing dates), then one bounded
+adapter proof against an independently chosen consumer if requested.
+Exclude: production viewer, authoring redesign, schedule calculation, automatic
+zone splitting and embedding any viewer's object IDs into core mappings.
+Visible result: a small verifiable playback/consumption example plus explicit
+unsupported/ambiguous cases. Renderer choice is a separate decision.
+Dependencies/risks: geometry crosswalk when required, timeline semantics and
+many-to-many conflicts. Last-assigned-activity-wins is unacceptable by default.
+Acceptance: every displayed object/task traces to source IDs and snapshot;
+multi-activity behavior follows approved semantics; incomplete timing is
+visible; swapping an adapter does not alter working relationships.
+
+USABILITY, VALIDATION AND RECOVERY PRIORITY
+The baseline already has auto-save, lock, backup, review filters and validation.
+Do not add a separate large infrastructure milestone merely for completeness.
+UI-01 desktop findings should determine whether a bounded usability/recovery
+fix precedes REV-01: e.g. demonstrably slow large-tree search, unclear target,
+or a reproducible save/recovery failure. A material data-safety defect takes
+priority. No such new desktop defect has been established here. JSON remains
+adequate for the authorized single-writer pilot; SQLite/service storage would
+add deployment/migration complexity without a demonstrated current need.
+
+ADAPTER BOUNDARY
+Core owns model/schedule identity, provenance and relationships. A downstream
+adapter owns geometry/object resolution for a particular artifact, transforms,
+rendering state, time policy and engine-specific IDs. IFC is an exchange option,
+not a required authoring identity. Consider industry-neutral process exchange
+only against actual consumer requirements; do not prematurely replace the
+accepted pilot JSON with an untested standard or fixed final schema.
+
+PO DECISIONS
+1. Accept UI-01 after the supplied desktop checklist, or report failed cases.
+2. Confirm the next user problem/priority: controlled P6 revision review is
+   recommended; authorize its bounded implementation separately.
+3. When authorizing linked reuse, decide same-source vs occurrence-specific
+   activity application. When authorizing 4D, decide desired task/time semantics.
+These future decisions do not block UI-01 delivery. Technical storage and UI
+implementation choices remain engineering responsibilities.
+
+PRIMARY REFERENCES (consulted 2026-10-13; documentation, not executed tests)
+Microsoft WPF TreeView: hierarchical containers, selection and expansion:
+https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/treeview
+Autodesk Revit API 2026 — Revit Links, types/instances and GetLinkDocument:
+https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Advanced_Topics/Linked_Files/Revit_API_Revit_API_Developers_Guide_Advanced_Topics_Linked_Files_Revit_Links_html.html
+Autodesk ExportUtils.GetExportId — export identity versus native lookup:
+https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/f410a32a-f9dd-32b3-b640-3cfa90e8b168.htm
+Oracle P6 integration mapping reference (fields/consumer mapping context):
+https://docs.oracle.com/cd/F37377_01/English/User_Guides/connecting_p6/10291732.htm
+References inform alternatives; they do not qualify all installed versions or
+prove schedule lineage/IFC stability for this project.

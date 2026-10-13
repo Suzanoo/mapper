@@ -4,8 +4,8 @@ import os
 import traceback
 from pyrevit import forms
 from Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent
-from System.Windows.Controls import ListBoxItem
-from . import core, p6, storage, revit_adapter as native
+from System.Windows.Controls import ListBoxItem, TreeViewItem
+from . import core, p6, storage, activity_tree, revit_adapter as native
 from .p6 import MappingError
 
 _WINDOW = None
@@ -49,6 +49,9 @@ class MappingWindow(forms.WPFWindow):
         self.excluded = []
         self.resolution = {}
         self.target = None
+        self._tree_items = {}
+        self._tree_expanded = {}
+        self._tree_filtered = False
         self.handler, self.external_event = handler, event
         self.actor = os.environ.get('USERNAME') or os.environ.get('USER') or 'local-operator'
         forms.WPFWindow.__init__(self, os.path.join(os.path.dirname(__file__), 'window.xaml'))
@@ -117,6 +120,9 @@ class MappingWindow(forms.WPFWindow):
         self.captured, self.excluded = [], []
         self.resolution = {}
         self.target = None
+        self._tree_items = {}
+        self._tree_expanded = {}
+        self._tree_filtered = False
 
     def on_activity_filter(self, sender, args):
         if self.ready:
@@ -126,7 +132,7 @@ class MappingWindow(forms.WPFWindow):
         if not self.ready:
             return
         item = self.Activities.SelectedItem
-        self.target = item.Tag if item else None
+        self.target = activity_tree.selected_key(item.Tag if item else None)
         self.fill_details()
         self.fill_relationships()
 
@@ -140,26 +146,60 @@ class MappingWindow(forms.WPFWindow):
 
     def fill_activities(self):
         remembered = self.target
+        if not self._tree_filtered:
+            for ident, item in self._tree_items.items():
+                if item.Tag['kind'] != 'activity':
+                    self._tree_expanded[ident] = bool(item.IsExpanded)
+        term = self.ActivitySearch.Text.strip()
         self.ready = False
-        self.Activities.Items.Clear()
-        if self.store:
-            schedule = self.store.state['schedule']
-            term = self.ActivitySearch.Text.lower().strip()
-            for a in schedule['activities']:
-                label = '%s | %s\n%s' % (a['Id'], a['Name'], p6.wbs_path(schedule, a['WBSObjectId']))
-                if term and term not in label.lower():
-                    continue
-                item = ListBoxItem()
-                item.Content, item.Tag = label, a['key']
-                item.ToolTip = label
-                self.Activities.Items.Add(item)
-                if a['key'] == remembered:
-                    self.Activities.SelectedItem = item
-        self.ready = True
-        item = self.Activities.SelectedItem
-        self.target = item.Tag if item else None
+        self.target = None
+        try:
+            self.Activities.Items.Clear()
+            self._tree_items = {}
+            if self.store:
+                tree = activity_tree.build(self.store.state['schedule'])
+                roots = activity_tree.filtered(tree['roots'], term)
+                stack = [(n, self.Activities.Items) for n in reversed(roots)]
+                visible = 0
+                while stack:
+                    node, collection = stack.pop()
+                    item = TreeViewItem()
+                    item.Header, item.Tag = node['label'], node
+                    item.ToolTip = node['reason'] or node['label']
+                    collection.Add(item)
+                    self._tree_items[node['id']] = item
+                    item.IsExpanded = bool(term) or self._tree_expanded.get(node['id'], False)
+                    activity_key = activity_tree.selected_key(node)
+                    if node['kind'] == 'activity':
+                        visible += 1
+                    if activity_key and activity_key == remembered:
+                        # TreeView.SelectedItem is read-only; select its container.
+                        item.IsSelected = True
+                        self.target = activity_key
+                    stack.extend((child, item.Items) for child in reversed(node['children']))
+                self.TreeStatus.Text = '%d / %d activities | %d hierarchy warnings' % (visible, tree['activity_count'], len(tree['warnings']))
+                self.TreeStatus.ToolTip = '\n'.join(tree['warnings']) or 'WBS headings are navigation only.'
+            else:
+                self.TreeStatus.Text = 'No schedule loaded.'
+                self.TreeStatus.ToolTip = None
+        finally:
+            self._tree_filtered = bool(term)
+            self.ready = True
         self.fill_details()
         self.fill_relationships()
+
+    def on_expand_tree(self, sender, args):
+        self.set_tree_expansion(True)
+
+    def on_collapse_tree(self, sender, args):
+        self.set_tree_expansion(False)
+
+    def set_tree_expansion(self, expanded):
+        for ident, item in self._tree_items.items():
+            if item.Tag['kind'] != 'activity':
+                item.IsExpanded = expanded
+                if not self._tree_filtered:
+                    self._tree_expanded[ident] = expanded
 
     def fill_details(self):
         a = self.target_record()
@@ -226,6 +266,9 @@ class MappingWindow(forms.WPFWindow):
         self.store, self.bound_doc, self.bound_path = store, doc, doc.PathName
         self.captured, self.excluded, self.resolution = [], [], {}
         self.target = None
+        self._tree_items = {}
+        self._tree_expanded = {}
+        self._tree_filtered = False
         if previous:
             previous.close()
 

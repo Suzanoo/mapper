@@ -1,37 +1,37 @@
 # Mapper
 
-**BIM–Schedule Mapping & Exchange**
+Mapper authors, reviews and exchanges relationships between BIM elements and construction schedule activities. This is a standalone product repository; its current application runs **inside Autodesk Revit through pyRevit**, not as a separate executable.
 
-Mapper is a project for authoring, reviewing, persisting, validating, and exporting relationships between BIM model elements and construction schedule activities.
+MS-0 and MS-1 are accepted by the Product Owner. UI-01 adds WBS → Activities navigation; its automated verification is complete and Revit Desktop acceptance remains pending. See [status](docs/mapping/STATUS.md) for the authoritative acceptance ledger.
 
-## Current status
+## Supported pilot
 
-**Repository bootstrap / migration pending.** The accepted MS-0 technical proof and MS-1 host-model mapping authoring pilot were developed in `Suzanoo/revit-toolkit`. Their source files and documentation have **not** been declared migrated or integrated into this repository.
+- P6 Professional V24.12 XML import with one project/schedule snapshot per working document.
+- Native host Walls, Floors, Structural Columns and Structural Framing.
+- Many-to-many assignment, relationship review, native selection, reassignment, notes, individual removal and session undo.
+- External working files, automatic save per edit, previous-revision recovery, validation and renderer-independent exchange.
+- WBS hierarchy, expand/collapse, Thai/English text and search retaining hierarchy context.
 
-## Accepted capabilities to preserve during migration
+## Install and start
 
-- Revit + pyRevit host-model mapping authoring pilot.
-- P6 XML activity import and stored schedule snapshot.
-- Many-to-many mapping between Revit elements and activities.
-- Review, reassign, remove, undo, and durable external working data.
-- Validation and renderer-independent mapping exchange.
+1. Use the complete repository at the accepted baseline plus the reviewed UI-01 overlay. Copy `MappingAuthoring.extension` into `%APPDATA%\pyRevit\Extensions`; avoid duplicate copies.
+2. Reload pyRevit in the accepted Revit 2026.1 / IronPython 2.7 environment. Open a saved, unmodified, non-workshared host model.
+3. Choose Mapping → Authoring → Mapping. Create a work file with **New + Import P6**, or **Open work** to continue.
+4. Expand WBS headings and select an Activity. Select native elements, click **Use current selection**, then **Add to target activity**. Additional activities preserve existing relationships.
+5. Review relationships, Save / Check, Validate and Export. Close work before copying backups.
 
-The accepted MS-1 pilot does not establish linked-model authoring, automatic schedule revision migration, or 4D viewer integration.
+Full [installation and usage](docs/mapping/INSTALL_AND_DESKTOP_ACCEPTANCE.txt), [UI-01 desktop checklist](docs/mapping/UI01_DESKTOP_ACCEPTANCE.txt), and [documentation index](docs/mapping/README.md).
 
-## Architecture direction
+## Limits
 
-Keep mapping identity and relationships independent from any particular renderer. Revit/pyRevit is the initial authoring environment; IFC and viewer integration are separate future concerns subject to investigation and Product Owner approval.
+One local writer; local NTFS working storage; saved non-workshared host only. No linked-model authoring, MSP, automatic schedule migration, geometry splitting or viewer. Exchange contains no geometry or IFC crosswalk. Native identity resolution never substitutes a replacement element. A file copy can retain native identity: explicit logical-model lineage confirmation remains necessary.
 
-## Repository migration
+## Engineering
 
-Migration from `Suzanoo/revit-toolkit` requires a controlled engineering handoff, including accepted source files, tests, documentation, compatibility checks, and a changed-file manifest. Do not assume the contents of `revit-toolkit` should be copied wholesale.
+Run `python -m unittest discover -s tests/mapping -v` from the repository root (CPython 3.9+). The public fixture is synthetic. One optional original-project test is skipped unless `MAPPER_REAL_P6` points to the exact MS-0 `009_P6.xml`; that private source is not distributed.
 
-## Collaboration
-
-- **Product Owner:** approves scope, milestones, and acceptance.
-- **Coordinator / Git Operator:** reviews deliveries, manages integration and Git operations under the agreed authority.
-- **Work (Engineer):** investigates, implements, tests, and delivers complete changed files without performing Git operations.
+Read [engineering workflow](docs/ENGINEERING.md) and [architecture/data contracts](docs/mapping/CONTRACTS.md) before editing. Work performs no Git operations; the Coordinator owns integration. Future work requires separate PO authorization.
 
 ## License
 
-No license has been selected yet. All rights reserved unless a license is explicitly added.
+No license selected. All rights reserved unless an explicit license is added.

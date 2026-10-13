@@ -16,7 +16,7 @@ class PackageContractTests(unittest.TestCase):
         tree = ast.parse((folder / 'ui.py').read_text(encoding='utf-8'))
         methods = {n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
         for node in root.iter():
-            for key in ('Click', 'TextChanged', 'SelectionChanged', 'Checked', 'Unchecked'):
+            for key in ('Click', 'TextChanged', 'SelectionChanged', 'SelectedItemChanged', 'Checked', 'Unchecked'):
                 if key in node.attrib:
                     self.assertIn(node.attrib[key], methods)
 
